@@ -11,31 +11,23 @@ import {
 
 function NavBar() {
   return (
-    <Sidebar>
-      <SidebarHeader />
-      <SidebarContent>
-        <SidebarGroup />
-        <SidebarGroup />
-      </SidebarContent>
-      <SidebarFooter />
-    </Sidebar>
-    // <div>
-    //   <Link href={routes.home}>
-    //     <div>Home</div>
-    //   </Link>
+    <div>
+      <Link href={routes.home}>
+        <div>Home</div>
+      </Link>
 
-    //   <Link href={routes.login}>
-    //     <div>Login</div>
-    //   </Link>
+      <Link href={routes.login}>
+        <div>Login</div>
+      </Link>
 
-    //   <Link href={routes.register}>
-    //     <div>Register</div>
-    //   </Link>
+      <Link href={routes.register}>
+        <div>Register</div>
+      </Link>
 
-    //   <Link href={routes.about}>
-    //     <div>About</div>
-    //   </Link>
-    // </div>
+      <Link href={routes.about}>
+        <div>About</div>
+      </Link>
+    </div>
   );
 }
 
