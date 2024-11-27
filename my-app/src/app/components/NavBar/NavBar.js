@@ -1,13 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import routes from "../../constants/routes";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-} from "@/components/ui/sidebar";
 
 function NavBar() {
   return (
