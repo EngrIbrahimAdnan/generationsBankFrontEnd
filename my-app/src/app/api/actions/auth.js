@@ -15,6 +15,9 @@ const headers = new Headers();
 headers.append("Content-Type", "application/json");
 
 export async function LoginAuth(formData) {
+  const username = formData.get("username");
+  const password = formData.get("password");
+
   try {
     //fetch response from backend via api endpoint "/api/auth/login"
     const response = await fetch(`${baseUrl}/api/auth/login`, {
@@ -48,6 +51,15 @@ export async function LoginAuth(formData) {
 }
 
 export async function registerAuth(formData) {
+  const username = formData.get("username"); // Retrieve using ID
+  const email = formData.get("email"); // Retrieve using ID
+  const password = formData.get("password");
+  const confirm_password = formData.get("confirm-password");
+  const age = formData.get("age");
+  const address = formData.get("address");
+  const phoneNumber = formData.get("phone");
+  const role = formData.get("role");
+
   // if password doesnt match confirm password
   if (password !== confirm_password) {
     console.log("password not confirmed");

@@ -33,13 +33,13 @@ export default function SignUpPage() {
         <form
           action={registerAuth}
           method="POST"
-          className="lg:p-8 relative z-10 pt-20 pr-10 pl-10 md:pr-0 md:pl-0"
+          className="lg:p-0 relative z-10 pt-2 pr-10 pl-10 md:pr-0 md:pl-0"
         >
-          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-            <div className="flex flex-col space-y-2 text-center">
+          <div className="mx-auto flex w-full flex-col justify-center  sm:w-[350px]">
+            <div className="flex flex-col  text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
                 Let&apos;s Get Started{" "}
-                <RocketIcon className="inline-block ml-1 h-6 w-6" />
+                <RocketIcon className="inline-block ml-1 h- w-6" />
               </h1>
               <p className="text-sm text-muted-foreground">
                 Sign up your account
