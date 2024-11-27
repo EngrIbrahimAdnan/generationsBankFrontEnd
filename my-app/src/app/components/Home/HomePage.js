@@ -27,7 +27,6 @@ export default function HomePage() {
   if (!mounted) return null;
 
   const handleNavigation = () => {
-    // router(routes.login); // Replace '/destination' with your route
     router.push(routes.login); // Replace '/destination' with your route
   };
 
