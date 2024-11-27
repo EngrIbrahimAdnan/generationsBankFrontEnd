@@ -19,6 +19,7 @@ import routes from "@/app/constants/routes"; // Importing routes
 
 const workingSpaceItems = [
   { icon: LayoutDashboard, label: "Dashboard", route: routes.dashboard },
+  { icon: LayoutDashboard, label: "Financial Goals", route: routes.goals },
   { icon: Users, label: "Promotions", route: routes.promotion },
   { icon: MessageSquare, label: "About", route: routes.about },
   { icon: Bell, label: "Privacy Policy", route: routes.privacy },

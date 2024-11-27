@@ -7,6 +7,7 @@ const routes = {
   promotion: "/auth/promotion",
   privacy: "/auth/privacypolicy",
   terms: "/termsandconditions",
+  goals: "/auth/goals",
 
   // Use for later for specific pages for users
   // userProfile: (id) => `/user/${id}`, // Dynamic route example
