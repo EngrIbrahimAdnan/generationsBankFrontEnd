@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import {
   Bar,
   BarChart,
@@ -18,118 +17,24 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { viewTransactions } from "@/actions";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+
+const monthlyData = [
+  { month: "Aug", balance: 300, spending: 150, saving: 200 },
+  { month: "Sep", balance: 320, spending: 180, saving: 220 },
+  { month: "Oct", balance: 280, spending: 160, saving: 190 },
+  { month: "Nov", balance: 350, spending: 200, saving: 240 },
+  { month: "Dec", balance: 310, spending: 170, saving: 210 },
+];
+
+const weeklyData = [
+  { name: "Balance", value: 35 },
+  { name: "Spending", value: 40 },
+  { name: "Saving", value: 25 },
+];
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
-export function DashboardCharts({ guardianId }) {
-  const [monthlyData, setMonthlyData] = useState([]);
-  const [weeklyData, setWeeklyData] = useState([]);
-  const [error, setError] = useState(null);
-
-  // Helper function to group transactions by month and calculate stats
-  const aggregateTransactionsByMonth = (transactions) => {
-    const grouped = {};
-
-    transactions.forEach((transaction) => {
-      const date = new Date(transaction.date);
-      const month = date.toLocaleString("default", { month: "short" });
-
-      if (!grouped[month]) {
-        grouped[month] = { balance: 0, spending: 0, saving: 0 };
-      }
-
-      grouped[month].balance += transaction.balance || 0;
-      grouped[month].spending += transaction.spending || 0;
-      grouped[month].saving += transaction.saving || 0;
-    });
-
-    return Object.keys(grouped).map((month) => ({
-      month,
-      ...grouped[month],
-    }));
-  };
-
-  // Helper function to filter transactions for the current week
-  const filterCurrentWeekTransactions = (transactions) => {
-    const today = new Date();
-    const startOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay())
-    );
-    const endOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay() + 6)
-    );
-
-    return transactions.filter((transaction) => {
-      const transactionDate = new Date(transaction.date);
-      return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
-    });
-  };
-
-  // Fetch monthly data for the bar chart
-  useEffect(() => {
-    const fetchMonthlyData = async () => {
-      try {
-        const transactions = await viewTransactions(guardianId);
-        const formattedMonthlyData = aggregateTransactionsByMonth(transactions);
-        setMonthlyData(formattedMonthlyData);
-      } catch (error) {
-        console.error("Error fetching monthly data:", error);
-        setError("Failed to load monthly data. Please try again later.");
-      }
-    };
-    fetchMonthlyData();
-  }, [guardianId]);
-
-  // Fetch weekly data for the pie charts
-  useEffect(() => {
-    const fetchWeeklyData = async () => {
-      try {
-        const transactions = await viewTransactions(guardianId);
-        const currentWeekTransactions =
-          filterCurrentWeekTransactions(transactions);
-
-        const weeklyAggregatedData = [
-          {
-            name: "Balance",
-            value: currentWeekTransactions.reduce(
-              (acc, t) => acc + (t.balance || 0),
-              0
-            ),
-          },
-          {
-            name: "Spending",
-            value: currentWeekTransactions.reduce(
-              (acc, t) => acc + (t.spending || 0),
-              0
-            ),
-          },
-          {
-            name: "Saving",
-            value: currentWeekTransactions.reduce(
-              (acc, t) => acc + (t.saving || 0),
-              0
-            ),
-          },
-        ];
-        setWeeklyData(weeklyAggregatedData);
-      } catch (error) {
-        console.error("Error fetching weekly data:", error);
-        setError("Failed to load weekly data. Please try again later.");
-      }
-    };
-    fetchWeeklyData();
-  }, [guardianId]);
-
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    );
-  }
-
+export function DashboardCharts() {
   return (
     <div className="space-y-8">
       {/* Monthly Bar Chart */}
@@ -140,11 +45,20 @@ export function DashboardCharts({ guardianId }) {
         <CardContent>
           <ChartContainer
             config={{
-              balance: { label: "Balance", color: "hsl(var(--chart-1))" },
-              spending: { label: "Spending", color: "hsl(var(--chart-2))" },
-              saving: { label: "Saving", color: "hsl(var(--chart-3))" },
+              balance: {
+                label: "Balance",
+                color: "hsl(var(--chart-1))",
+              },
+              spending: {
+                label: "Spending",
+                color: "hsl(var(--chart-2))",
+              },
+              saving: {
+                label: "Saving",
+                color: "hsl(var(--chart-3))",
+              },
             }}
-            className="h-[400px] w-full"
+            className="h-[400px]"
           >
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -157,17 +71,17 @@ export function DashboardCharts({ guardianId }) {
                 <Legend />
                 <Bar
                   dataKey="balance"
-                  fill="var(--chart-1)"
+                  fill="var(--color-balance)"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="spending"
-                  fill="var(--chart-2)"
+                  fill="var(--color-spending)"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="saving"
-                  fill="var(--chart-3)"
+                  fill="var(--color-saving)"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -179,7 +93,7 @@ export function DashboardCharts({ guardianId }) {
       {/* Weekly Pie Charts */}
       <Card>
         <CardHeader>
-          <CardTitle>Weekly Overview</CardTitle>
+          <CardTitle>Weekly</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -187,11 +101,20 @@ export function DashboardCharts({ guardianId }) {
               <div key={week} className="flex flex-col items-center">
                 <ChartContainer
                   config={{
-                    balance: { label: "Balance", color: COLORS[0] },
-                    spending: { label: "Spending", color: COLORS[1] },
-                    saving: { label: "Saving", color: COLORS[2] },
+                    balance: {
+                      label: "Balance",
+                      color: COLORS[0],
+                    },
+                    spending: {
+                      label: "Spending",
+                      color: COLORS[1],
+                    },
+                    saving: {
+                      label: "Saving",
+                      color: COLORS[2],
+                    },
                   }}
-                  className="h-[200px] w-[200px]"
+                  className="h-[150px] w-[150px]"
                 >
                   <PieChart>
                     <Pie
@@ -200,8 +123,8 @@ export function DashboardCharts({ guardianId }) {
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      innerRadius={40}
-                      outerRadius={80}
+                      innerRadius={30}
+                      outerRadius={60}
                     >
                       {weeklyData.map((entry, index) => (
                         <Cell

@@ -70,7 +70,7 @@ export default function DashboardPage() {
               <Tabs defaultValue="payment" className="mt-6">
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="payment">Payment</TabsTrigger>
-                  <TabsTrigger value="detailed">Detailed report</TabsTrigger>
+                  <TabsTrigger value="detailed">Detailed Report</TabsTrigger>
                   <TabsTrigger value="chart">Chart</TabsTrigger>
                   <TabsTrigger value="protection">Protection</TabsTrigger>
                 </TabsList>
@@ -96,7 +96,7 @@ export default function DashboardPage() {
 
                 <TabsContent value="protection">
                   <div className="mt-6">
-                    <ProtectionSettings />
+                    <ProtectionSettings guardianId={id} />
                   </div>
                 </TabsContent>
               </Tabs>

@@ -20,6 +20,13 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarContent,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { MainNav } from "@/components/main-nav";
 
 const PromotionsPage = () => {
   const [promotions, setPromotions] = useState([]);
@@ -36,7 +43,6 @@ const PromotionsPage = () => {
   useEffect(() => {
     // Simulating an API call to fetch promotions
     const fetchPromotions = async () => {
-      // In a real application, this would be an API call
       const mockPromotions = [
         {
           id: "1",
@@ -133,117 +139,139 @@ const PromotionsPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fcfd] py-16 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        className="max-w-6xl mx-auto space-y-8"
-        initial="initial"
-        animate="animate"
-        variants={{
-          animate: {
-            transition: {
-              staggerChildren: 0.1,
-            },
-          },
-        }}
-      >
-        <motion.div variants={fadeInUp} className="text-center">
-          <h1 className="text-4xl font-bold text-[#35579b]">
-            Exclusive Promotions
-          </h1>
-          <p className="mt-4 text-xl text-[#35579b]/70">
-            Enjoy special discounts with our partner apps
-          </p>
-        </motion.div>
+    <SidebarProvider>
+      <div className="w-screen hidden md:block">
+        {/* Header */}
+        <div className="border-b">
+          <div className="flex h-16 items-center px-4">
+            <MainNav className="mx-6" />
+            <div className="ml-auto flex items-center space-x-4">
+              <SidebarTrigger />
+            </div>
+          </div>
+        </div>
 
-        <motion.div variants={fadeInUp} className="w-full max-w-md mx-auto">
-          <Input
-            type="text"
-            placeholder="Search promotions..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 rounded-md border border-[#4B89BF] focus:outline-none focus:ring-2 focus:ring-[#35579b] focus:border-transparent"
-          />
-        </motion.div>
-
-        <motion.div
-          variants={fadeInUp}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {filteredPromotions.map((promo) => (
-            <Card
-              key={promo.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-white"
+        {/* Sidebar and Content */}
+        <div className="flex h-[calc(100vh-4rem)]">
+          {/* Sidebar */}
+          <AppSidebar className="w-64 h-full border-r bg-gray-100" />
+          <SidebarContent className="flex-1 overflow-visible">
+            <motion.div
+              className="max-w-6xl mx-auto space-y-8"
+              initial="initial"
+              animate="animate"
+              variants={{
+                animate: {
+                  transition: {
+                    staggerChildren: 0.1,
+                  },
+                },
+              }}
             >
-              <CardHeader className="bg-[#4B89BF] text-white">
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center space-x-2">
-                    <promo.icon className="w-6 h-6" />
-                    <span>{promo.app}</span>
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <p className="text-[#35579b]/70 mb-4 h-12">
-                  {promo.description}
+              <motion.div variants={fadeInUp} className="text-center">
+                <h1 className="text-4xl font-bold text-[#35579b]">
+                  Exclusive Promotions
+                </h1>
+                <p className="mt-4 text-xl text-[#35579b]/70">
+                  Enjoy special discounts with our partner apps
                 </p>
-                {activatedCodes[promo.id] ? (
-                  <div className="flex items-center justify-between bg-[#EAEFF6] p-3 rounded-md">
-                    <span className="font-mono text-lg font-semibold text-[#35579b]">
-                      {promo.code}
-                    </span>
-                    <Button
-                      onClick={() => copyToClipboard(promo.code)}
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center space-x-2 transition-all duration-300 ease-in-out transform hover:scale-105 border-[#4B89BF] text-[#4B89BF] hover:bg-[#4B89BF] hover:text-white"
-                    >
-                      {copiedCode === promo.code ? (
-                        <>
-                          <CheckCircle className="w-4 h-4" />
-                          <span>Copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    onClick={() => activateCode(promo.id)}
-                    variant="default"
-                    className="w-full bg-[#4B89BF] text-white hover:bg-[#35579b]"
+              </motion.div>
+
+              <motion.div
+                variants={fadeInUp}
+                className="w-full max-w-md mx-auto"
+              >
+                <Input
+                  type="text"
+                  placeholder="Search promotions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 rounded-md border border-[#4B89BF] focus:outline-none focus:ring-2 focus:ring-[#35579b] focus:border-transparent"
+                />
+              </motion.div>
+
+              <motion.div
+                variants={fadeInUp}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {filteredPromotions.map((promo) => (
+                  <Card
+                    key={promo.id}
+                    className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-white"
                   >
-                    Activate
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </motion.div>
+                    <CardHeader className="bg-[#4B89BF] text-white">
+                      <CardTitle className="flex items-center justify-between">
+                        <span className="flex items-center space-x-2">
+                          <promo.icon className="w-6 h-6" />
+                          <span>{promo.app}</span>
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <p className="text-[#35579b]/70 mb-4 h-12">
+                        {promo.description}
+                      </p>
+                      {activatedCodes[promo.id] ? (
+                        <div className="flex items-center justify-between bg-[#EAEFF6] p-3 rounded-md">
+                          <span className="font-mono text-lg font-semibold text-[#35579b]">
+                            {promo.code}
+                          </span>
+                          <Button
+                            onClick={() => copyToClipboard(promo.code)}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center space-x-2 transition-all duration-300 ease-in-out transform hover:scale-105 border-[#4B89BF] text-[#4B89BF] hover:bg-[#4B89BF] hover:text-white"
+                          >
+                            {copiedCode === promo.code ? (
+                              <>
+                                <CheckCircle className="w-4 h-4" />
+                                <span>Copied</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-4 h-4" />
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={() => activateCode(promo.id)}
+                          variant="default"
+                          className="w-full bg-[#4B89BF] text-white hover:bg-[#35579b]"
+                        >
+                          Activate
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </motion.div>
 
-        {filteredPromotions.length === 0 && (
-          <motion.div
-            variants={fadeInUp}
-            className="text-center text-[#35579b]/70"
-          >
-            No promotions found matching your search.
-          </motion.div>
-        )}
+              {filteredPromotions.length === 0 && (
+                <motion.div
+                  variants={fadeInUp}
+                  className="text-center text-[#35579b]/70"
+                >
+                  No promotions found matching your search.
+                </motion.div>
+              )}
 
-        <motion.div
-          variants={fadeInUp}
-          className="text-center text-sm text-[#35579b]/50"
-        >
-          <p>
-            Promotions are subject to terms and conditions. Offers may change
-            without notice.
-          </p>
-        </motion.div>
-      </motion.div>
-    </div>
+              <motion.div
+                variants={fadeInUp}
+                className="text-center text-sm text-[#35579b]/50"
+              >
+                <p>
+                  Promotions are subject to terms and conditions. Offers may
+                  change without notice.
+                </p>
+              </motion.div>
+            </motion.div>
+          </SidebarContent>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 };
 

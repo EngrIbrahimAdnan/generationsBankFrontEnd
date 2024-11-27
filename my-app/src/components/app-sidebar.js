@@ -15,53 +15,32 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import routes from "@/app/constants/routes"; // Importing routes
 
 const workingSpaceItems = [
-  { icon: LayoutDashboard, label: "Dashboard", active: true },
-  { icon: Users, label: "Team/Learning" },
-  { icon: MessageSquare, label: "Social" },
-  { icon: Bell, label: "Assessment" },
-];
-
-const personalItems = [
-  { icon: LayoutDashboard, label: "Timeline" },
-  { icon: MessageSquare, label: "Messages" },
-  { icon: Bell, label: "Notifications" },
-  { icon: Settings, label: "Settings" },
+  { icon: LayoutDashboard, label: "Dashboard", route: routes.dashboard },
+  { icon: Users, label: "Promotions", route: routes.promotion },
+  { icon: MessageSquare, label: "About", route: routes.about },
+  { icon: Bell, label: "Privacy Policy", route: routes.privacy },
+  { icon: Bell, label: "Terms and Conditions", route: routes.terms },
 ];
 
 export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
+        {/* Working Space Group */}
         <SidebarGroup>
-          <SidebarGroupLabel>Working space</SidebarGroupLabel>
+          <SidebarGroupLabel>Pages</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {workingSpaceItems.map((item, index) => (
                 <SidebarMenuItem key={index}>
-                  <SidebarMenuButton asChild isActive={item.active}>
-                    <button className="w-full flex items-center">
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {item.label}
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Personal</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {personalItems.map((item, index) => (
-                <SidebarMenuItem key={index}>
                   <SidebarMenuButton asChild>
-                    <button className="w-full flex items-center">
+                    <a href={item.route} className="w-full flex items-center">
                       <item.icon className="mr-2 h-4 w-4" />
                       {item.label}
-                    </button>
+                    </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

@@ -218,11 +218,8 @@ export async function setRestrictions(dependentAccountId, restrictionRequest) {
     `${baseUrl}/setRestrictions/${dependentAccountId}`,
     {
       method: "PUT",
-      headers: {
-        ...(await getHeaders()),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(time),
+      headers: await getHeaders(),
+      body: JSON.stringify(restrictionRequest),
     }
   );
   if (!response.ok) {
