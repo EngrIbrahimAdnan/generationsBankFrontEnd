@@ -25,6 +25,7 @@ export async function LoginAuth(formData) {
       headers,
       body: JSON.stringify({ username, password }),
     });
+    console.log(response);
 
     if (!response.ok) {
       // Extract error message from response if available
@@ -35,6 +36,7 @@ export async function LoginAuth(formData) {
 
     // set token
     await setToken(token);
+    console.log(token);
   } catch (error) {
     // if login is wrong (wrong credientals or user doesnt exist)
     console.error("Login error:", error);
@@ -47,7 +49,7 @@ export async function LoginAuth(formData) {
   }
 
   // routes to about page if login is successful for time being
-  redirect(routes.about);
+  redirect(routes.dashboard);
 }
 
 export async function registerAuth(formData) {

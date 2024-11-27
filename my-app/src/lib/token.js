@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
 
 export async function setToken(token) {
   const cookieStore = await cookies();

@@ -18,82 +18,117 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { viewTransactions } from "@/actions"; // Assuming you have this function to get the data from the server
+import { viewTransactions } from "@/actions";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
-export function DashboardCharts(guardianId) {
+export function DashboardCharts({ guardianId }) {
   const [monthlyData, setMonthlyData] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
+  const [error, setError] = useState(null);
 
   // Helper function to group transactions by month and calculate stats
   const aggregateTransactionsByMonth = (transactions) => {
     const grouped = {};
 
     transactions.forEach((transaction) => {
-      // Get the month from the transaction date
       const date = new Date(transaction.date);
-      const month = date.toLocaleString("default", { month: "short" }); // 'Jan', 'Feb', etc.
+      const month = date.toLocaleString("default", { month: "short" });
 
       if (!grouped[month]) {
         grouped[month] = { balance: 0, spending: 0, saving: 0 };
       }
 
-      // Aggregate the transaction details
       grouped[month].balance += transaction.balance || 0;
       grouped[month].spending += transaction.spending || 0;
       grouped[month].saving += transaction.saving || 0;
     });
 
-    // Convert the grouped object into an array
     return Object.keys(grouped).map((month) => ({
       month,
       ...grouped[month],
     }));
   };
 
+  // Helper function to filter transactions for the current week
+  const filterCurrentWeekTransactions = (transactions) => {
+    const today = new Date();
+    const startOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay())
+    );
+    const endOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 6)
+    );
+
+    return transactions.filter((transaction) => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
+    });
+  };
+
   // Fetch monthly data for the bar chart
   useEffect(() => {
     const fetchMonthlyData = async () => {
       try {
-        const transactions = await viewTransactions(guardianId); // Assuming guardian ID 1 for simplicity
-        // Aggregate transactions by month
+        const transactions = await viewTransactions(guardianId);
         const formattedMonthlyData = aggregateTransactionsByMonth(transactions);
         setMonthlyData(formattedMonthlyData);
       } catch (error) {
         console.error("Error fetching monthly data:", error);
+        setError("Failed to load monthly data. Please try again later.");
       }
     };
     fetchMonthlyData();
-  }, []);
+  }, [guardianId]);
 
-  // Fetch weekly data for the pie chart (same structure, for simplicity here)
+  // Fetch weekly data for the pie charts
   useEffect(() => {
     const fetchWeeklyData = async () => {
       try {
-        const transactions = await viewTransactions(guardianId); // Assuming guardian ID 1 for simplicity
-        // Aggregate weekly data if needed (use the same aggregation as for monthly)
+        const transactions = await viewTransactions(guardianId);
+        const currentWeekTransactions =
+          filterCurrentWeekTransactions(transactions);
+
         const weeklyAggregatedData = [
           {
             name: "Balance",
-            value: transactions.reduce((acc, t) => acc + (t.balance || 0), 0),
+            value: currentWeekTransactions.reduce(
+              (acc, t) => acc + (t.balance || 0),
+              0
+            ),
           },
           {
             name: "Spending",
-            value: transactions.reduce((acc, t) => acc + (t.spending || 0), 0),
+            value: currentWeekTransactions.reduce(
+              (acc, t) => acc + (t.spending || 0),
+              0
+            ),
           },
           {
             name: "Saving",
-            value: transactions.reduce((acc, t) => acc + (t.saving || 0), 0),
+            value: currentWeekTransactions.reduce(
+              (acc, t) => acc + (t.saving || 0),
+              0
+            ),
           },
         ];
         setWeeklyData(weeklyAggregatedData);
       } catch (error) {
         console.error("Error fetching weekly data:", error);
+        setError("Failed to load weekly data. Please try again later.");
       }
     };
     fetchWeeklyData();
-  }, []);
+  }, [guardianId]);
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -109,7 +144,7 @@ export function DashboardCharts(guardianId) {
               spending: { label: "Spending", color: "hsl(var(--chart-2))" },
               saving: { label: "Saving", color: "hsl(var(--chart-3))" },
             }}
-            className="h-[400px] w-11/12"
+            className="h-[400px] w-full"
           >
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -122,17 +157,17 @@ export function DashboardCharts(guardianId) {
                 <Legend />
                 <Bar
                   dataKey="balance"
-                  fill="var(--color-balance)"
+                  fill="var(--chart-1)"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="spending"
-                  fill="var(--color-spending)"
+                  fill="var(--chart-2)"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="saving"
-                  fill="var(--color-saving)"
+                  fill="var(--chart-3)"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -144,7 +179,7 @@ export function DashboardCharts(guardianId) {
       {/* Weekly Pie Charts */}
       <Card>
         <CardHeader>
-          <CardTitle>Weekly</CardTitle>
+          <CardTitle>Weekly Overview</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

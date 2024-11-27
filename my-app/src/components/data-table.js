@@ -47,7 +47,7 @@ export function DataTable({ guardianId }) {
   };
 
   if (loading) return <div>Loading transactions...</div>;
-  if (error) return <div>{error}</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="rounded-md border overflow-x-auto">
@@ -64,50 +64,56 @@ export function DataTable({ guardianId }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((item) => (
-            <TableRow key={item.id} className="border-b">
-              <TableCell className="text-center">{item.id}</TableCell>
-              <TableCell className="text-right">{item.amount}</TableCell>
-              <TableCell className="text-left">
-                {item.transactionFromId}
-              </TableCell>
-              <TableCell className="text-left">
-                {item.transactionToId}
-              </TableCell>
-              <TableCell className="text-left">
-                {item.timeStamp.split("T")[0]}
-              </TableCell>
-              <TableCell className="text-center">
-                <span
-                  className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${
-                    item.status === "In progress"
-                      ? "bg-blue-100 text-blue-700"
-                      : item.status === "Done"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {item.status}
-                </span>
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="flex justify-center space-x-2">
-                  <button
-                    onClick={() => handleApproveTransaction(item.id, true)}
-                    className="text-gray-400 hover:text-green-500"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleApproveTransaction(item.id, false)}
-                    className="text-gray-400 hover:text-red-500"
-                  >
-                    Reject
-                  </button>
-                </div>
+          {transactions.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center text-gray-500 py-4">
+                No transactions available.
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            transactions.map((item) => (
+              <TableRow key={item.transactionId} className="border-b">
+                <TableCell className="text-center">
+                  {item.transactionId}
+                </TableCell>
+                <TableCell className="text-center">{item.amount}</TableCell>
+                <TableCell className="text-left">{item.sentFromUser}</TableCell>
+                <TableCell className="text-left">{item.sentToUser}</TableCell>
+                <TableCell className="text-left">
+                  {item.dateTime.split("T")[0]}
+                </TableCell>
+                <TableCell className="text-center">
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${
+                      item.status === "In progress"
+                        ? "bg-blue-100 text-blue-700"
+                        : item.status === "Done"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex justify-center space-x-2">
+                    <button
+                      onClick={() => handleApproveTransaction(item.id, true)}
+                      className="text-gray-400 hover:text-green-500"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleApproveTransaction(item.id, false)}
+                      className="text-gray-400 hover:text-red-500"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

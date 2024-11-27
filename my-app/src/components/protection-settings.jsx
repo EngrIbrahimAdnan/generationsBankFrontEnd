@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,8 +12,48 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  setDailyLimit,
+  setWeeklyLimit,
+  setMonthlyLimit,
+  setRestrictions,
+} from "@/actions"; // Adjust the path to your fetch functions
 
 export function ProtectionSettings() {
+  const [dailyLimit, setDailyLimitState] = useState(15);
+  const [weeklyLimit, setWeeklyLimitState] = useState(50);
+  const [monthlyLimit, setMonthlyLimitState] = useState(250);
+  const [timeRestrictions, setTimeRestrictions] = useState({
+    startTime: "08:00",
+    endTime: "17:00",
+  });
+  const [dependentAccountId] = useState(1); // Replace with actual dependent account ID
+
+  const handleSaveLimits = async () => {
+    try {
+      await setDailyLimit(dependentAccountId, dailyLimit);
+      await setWeeklyLimit(dependentAccountId, weeklyLimit);
+      await setMonthlyLimit(dependentAccountId, monthlyLimit);
+      alert("Limits updated successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update limits.");
+    }
+  };
+
+  const handleSaveRestrictions = async () => {
+    try {
+      const restrictionRequest = {
+        time: timeRestrictions,
+      };
+      await setRestrictions(dependentAccountId, restrictionRequest);
+      alert("Restrictions updated successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update restrictions.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Permission Levels Info */}
@@ -38,87 +79,86 @@ export function ProtectionSettings() {
 
       {/* Spending Limits */}
       <Card>
-        <CardContent className="space-y-1">
-          {[
-            {
-              label: "Daily limits - spend x amount per day",
-              defaultValue: "15",
-            },
-            {
-              label: "Weekly limits - spend x amount per Weekly",
-              defaultValue: "50",
-            },
-            {
-              label: "Monthly limits - spend x amount per Monthly",
-              defaultValue: "250",
-            },
-            {
-              label: "Restrictions apply only during specific times",
-              type: "time",
-            },
-            { label: "Permission Levels:", type: "select" },
-            {
-              label:
-                "Transaction Limit: Set the maximum number of transactions allowed",
-              type: "select",
-            },
-            {
-              label: "Allow spending only in approved categories",
-              placeholder: "Food, fuel, etc.",
-            },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className={`flex items-center justify-between p-2 ${
-                index % 2 === 0 ? "bg-white" : "bg-gray-100"
-              }`}
-            >
-              <Label className="flex-1">{item.label}</Label>
-              <div className="flex-1">
-                {item.type === "time" ? (
-                  <div className="flex space-x-2">
-                    <Input type="time" defaultValue="08:00" className="w-24" />
-                    <Input type="time" defaultValue="17:00" className="w-24" />
-                  </div>
-                ) : item.type === "select" ? (
-                  <Select
-                    defaultValue={
-                      item.label.includes("Permission") ? "mid" : "5"
-                    }
-                  >
-                    <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {item.label.includes("Permission") ? (
-                        <>
-                          <SelectItem value="never">Never</SelectItem>
-                          <SelectItem value="mid">Mid</SelectItem>
-                          <SelectItem value="open">Open</SelectItem>
-                        </>
-                      ) : (
-                        <>
-                          <SelectItem value="1">1 transaction</SelectItem>
-                          <SelectItem value="5">5 transactions</SelectItem>
-                          <SelectItem value="10">10 transactions</SelectItem>
-                          <SelectItem value="unlimited">
-                            Unlimited transactions
-                          </SelectItem>
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    type={item.type || "number"}
-                    placeholder={item.placeholder || "100"}
-                    defaultValue={item.defaultValue}
-                    className="w-[200px]"
-                  />
-                )}
-              </div>
-            </div>
-          ))}
+        <CardHeader>
+          <CardTitle>Spending Limits</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <Label>Daily Limit:</Label>
+            <Input
+              type="number"
+              value={dailyLimit}
+              onChange={(e) => setDailyLimitState(Number(e.target.value))}
+              className="w-[200px]"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <Label>Weekly Limit:</Label>
+            <Input
+              type="number"
+              value={weeklyLimit}
+              onChange={(e) => setWeeklyLimitState(Number(e.target.value))}
+              className="w-[200px]"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <Label>Monthly Limit:</Label>
+            <Input
+              type="number"
+              value={monthlyLimit}
+              onChange={(e) => setMonthlyLimitState(Number(e.target.value))}
+              className="w-[200px]"
+            />
+          </div>
+          <button
+            onClick={handleSaveLimits}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Save Limits
+          </button>
+        </CardContent>
+      </Card>
+
+      {/* Time Restrictions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Time Restrictions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <Label>Start Time:</Label>
+            <Input
+              type="time"
+              value={timeRestrictions.startTime}
+              onChange={(e) =>
+                setTimeRestrictions((prev) => ({
+                  ...prev,
+                  startTime: e.target.value,
+                }))
+              }
+              className="w-[200px]"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <Label>End Time:</Label>
+            <Input
+              type="time"
+              value={timeRestrictions.endTime}
+              onChange={(e) =>
+                setTimeRestrictions((prev) => ({
+                  ...prev,
+                  endTime: e.target.value,
+                }))
+              }
+              className="w-[200px]"
+            />
+          </div>
+          <button
+            onClick={handleSaveRestrictions}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Save Restrictions
+          </button>
         </CardContent>
       </Card>
     </div>

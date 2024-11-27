@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { MainNav } from "@/components/main-nav";
 import { Overview } from "@/components/overview";
 import { DataTable } from "@/components/data-table";
@@ -15,21 +16,20 @@ import {
 import "../../globals.css";
 import { DashboardCharts } from "@/components/dashboard-charts";
 import { ProtectionSettings } from "@/components/protection-settings";
-import { decodeJwt } from "@/actions";
-import { useEffect, useState } from "react";
+import { getIdUser } from "@/actions";
 
 export default function DashboardPage() {
   const [id, setId] = useState(null);
 
   useEffect(() => {
     const fetchDecodedToken = async () => {
-      try {
-        const decodedToken = await decodeJwt(
-          "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInN1YiI6IlJhbWVucyIsImlhdCI6MTczMjYzMDg5OCwiZXhwIjoxNzMyNjM0NDk4fQ.RUm3591SnAWbf3ZlF0upEqbBPx8iQKJ5G0KtarJwCz8"
-        );
-        setId(decodedToken.userId);
-      } catch (error) {
-        console.error("Error decoding token:", error); // Retain error logging for debugging
+      const user = await getIdUser();
+      console.log(user);
+      console.log(user);
+      if (user) {
+        setId(user.userId);
+      } else {
+        console.warn("User not authenticated or token invalid.");
       }
     };
 
@@ -63,7 +63,7 @@ export default function DashboardPage() {
               {/* Overview Section */}
               <div className="p-9 bg-gray-100 rounded-xl border shadow-md z-10 w-full">
                 <h1 className="text-l font-bold mb-1">Overview</h1>
-                <Overview />
+                <Overview guardianId={id} />
               </div>
 
               {/* Tabs Section */}

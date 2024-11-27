@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { viewDependents } from "@/actions";
 import {
   Select,
   SelectContent,
@@ -20,6 +21,21 @@ export function QuickActions({ guardianId }) {
   const [accountCode, setAccountCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [dependents, setDependents] = useState([]);
+
+  // Fetch dependents on mount
+  useEffect(() => {
+    const fetchDependents = async () => {
+      try {
+        const dependentsData = await viewDependents(guardianId);
+        setDependents(dependentsData);
+      } catch (error) {
+        console.error("Error fetching dependents:", error);
+      }
+    };
+
+    fetchDependents();
+  }, [guardianId]);
 
   // Handle Transfer Money
   const handleTransfer = async () => {
@@ -100,8 +116,11 @@ export function QuickActions({ guardianId }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="main">Main Account</SelectItem>
-                <SelectItem value="son1">SON 1</SelectItem>
-                <SelectItem value="son2">SON 2</SelectItem>
+                {dependents.map((dependent) => (
+                  <SelectItem key={dependent.id} value={dependent.accountId}>
+                    {dependent.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select
@@ -114,8 +133,11 @@ export function QuickActions({ guardianId }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="main">Main Account</SelectItem>
-                <SelectItem value="son1">SON 1</SelectItem>
-                <SelectItem value="son2">SON 2</SelectItem>
+                {dependents.map((dependent) => (
+                  <SelectItem key={dependent.id} value={dependent.accountId}>
+                    {dependent.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Button
