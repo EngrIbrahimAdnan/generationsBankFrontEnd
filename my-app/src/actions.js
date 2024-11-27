@@ -1,8 +1,11 @@
 "use server";
 
+import { getHeaders } from "./app/api/actions/config";
+import { getUser } from "./lib/token";
+
 const baseUrl = "http://localhost:8080/api/guardian";
-const headers = new Headers();
-headers.append("Content-Type", "application/json");
+// const headers = getHe;
+// headers.append("Content-Type", "application/json");
 
 /**
  * Transfer funds between accounts.
@@ -11,7 +14,7 @@ headers.append("Content-Type", "application/json");
 export async function transfer(data) {
   const response = await fetch(`${baseUrl}/transfer`, {
     method: "POST",
-    headers,
+    headers: await getHeaders(),
     body: JSON.stringify(data),
   });
   if (!response.ok) {
@@ -28,7 +31,7 @@ export async function addDependent(data) {
   console.log(data);
   const response = await fetch(`${baseUrl}/addDependent`, {
     method: "PUT",
-    headers,
+    headers: await getHeaders(),
     body: JSON.stringify(data),
   });
   if (!response.ok) {
@@ -44,7 +47,7 @@ export async function addDependent(data) {
 export async function viewDependents(guardianId) {
   const response = await fetch(`${baseUrl}/${guardianId}/dependents`, {
     method: "GET",
-    headers,
+    headers: await getHeaders(),
   });
   if (!response.ok) {
     throw new Error(await response.text());
@@ -63,30 +66,13 @@ export async function viewTransactions(guardianId, filters = {}) {
     `${baseUrl}/viewTransactions/${guardianId}?${query}`,
     {
       method: "GET",
-      headers,
+      headers: await getHeaders(),
     }
   );
   if (!response.ok) {
     throw new Error(await response.text());
   }
   return await response.json();
-}
-
-/**
- * Set a spending limit for a dependent.
- * @param {number} dependentAccountId - Dependent's account ID.
- * @param {number} limit - Spending limit.
- */
-export async function setSpendingLimit(dependentAccountId, limit) {
-  const query = new URLSearchParams({ dependentAccountId, limit }).toString();
-  const response = await fetch(`${baseUrl}/setSpendingLimit?${query}`, {
-    method: "PUT",
-    headers,
-  });
-  if (!response.ok) {
-    throw new Error(await response.text());
-  }
-  return await response.text();
 }
 
 /**
@@ -98,7 +84,7 @@ export async function approveTransaction(transactionId, approve) {
   const query = new URLSearchParams({ transactionId, approve }).toString();
   const response = await fetch(`${baseUrl}/approveTransaction?${query}`, {
     method: "PUT",
-    headers,
+    headers: await getHeaders(),
   });
   if (!response.ok) {
     throw new Error(await response.text());
@@ -133,4 +119,111 @@ export async function decodeJwt(token) {
   const decoded = JSON.parse(atob(base64));
 
   return decoded;
+}
+
+export async function getIdUser() {
+  return getUser();
+}
+
+export async function getAccount(userId) {
+  //const query = new URLSearchParams(userId.toString());
+  const response = await fetch(`${baseUrl}/getAccount/${userId}`, {
+    method: "GET",
+    headers: await getHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return await response.text();
+}
+
+/**
+ * Set a spending limit for a dependent.
+ * @param {number} dependentAccountId - Dependent's account ID.
+ * @param {number} limit - Spending limit.
+ */
+export async function setSpendingLimit(dependentAccountId, limit) {
+  const query = new URLSearchParams({ dependentAccountId, limit }).toString();
+  const response = await fetch(`${baseUrl}/setSpendingLimit?${query}`, {
+    method: "PUT",
+    headers: await getHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return await response.text();
+}
+
+/**
+ * Set a daily limit for a dependent.
+ * @param {number} dependentAccountId - Dependent's account ID.
+ * @param {number} limit - Daily limit.
+ */
+export async function setDailyLimit(dependentAccountId, limit) {
+  const query = new URLSearchParams({ dependentAccountId, limit }).toString();
+  const response = await fetch(`${baseUrl}/setDailyLimit?${query}`, {
+    method: "PUT",
+    headers: await getHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return await response.text();
+}
+
+/**
+ * Set a weekly limit for a dependent.
+ * @param {number} dependentAccountId - Dependent's account ID.
+ * @param {number} limit - Weekly limit.
+ */
+export async function setWeeklyLimit(dependentAccountId, limit) {
+  const query = new URLSearchParams({ dependentAccountId, limit }).toString();
+  const response = await fetch(`${baseUrl}/setWeeklyLimit?${query}`, {
+    method: "PUT",
+    headers: await getHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return await response.text();
+}
+
+/**
+ * Set a monthly limit for a dependent.
+ * @param {number} dependentAccountId - Dependent's account ID.
+ * @param {number} limit - Monthly limit.
+ */
+export async function setMonthlyLimit(dependentAccountId, limit) {
+  const query = new URLSearchParams({ dependentAccountId, limit }).toString();
+  const response = await fetch(`${baseUrl}/setMonthlyLimit?${query}`, {
+    method: "PUT",
+    headers: await getHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return await response.text();
+}
+
+/**
+ * Set restrictions for a dependent.
+ * @param {number} dependentAccountId - Dependent's account ID.
+ * @param {Object} restrictionRequest - Restriction details.
+ */
+export async function setRestrictions(dependentAccountId, restrictionRequest) {
+  console.log(dependentAccountId);
+  const { time } = restrictionRequest;
+  console.log(time);
+  const response = await fetch(
+    `${baseUrl}/setRestrictions/${dependentAccountId}`,
+    {
+      method: "PUT",
+      headers: await getHeaders(),
+      body: JSON.stringify(restrictionRequest),
+    }
+  );
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return await response.text();
 }

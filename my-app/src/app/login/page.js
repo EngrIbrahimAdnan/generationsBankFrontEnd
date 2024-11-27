@@ -129,14 +129,14 @@ export default function LoginPage() {
             <div className="text-center text-sm text-muted-foreground">
               Review our{" "}
               <Link
-                href="/terms"
+                href={routes.terms}
                 className="underline underline-offset-4 hover:text-primary"
               >
                 Terms & Conditions
               </Link>{" "}
               and{" "}
               <Link
-                href="/privacy"
+                href={routes.privacy}
                 className="underline underline-offset-4 hover:text-primary"
               >
                 Privacy Policy

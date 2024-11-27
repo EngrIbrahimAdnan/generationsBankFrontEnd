@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { viewDependents } from "@/actions";
 import {
   Select,
   SelectContent,
@@ -14,12 +15,27 @@ import { transfer, addDependent } from "@/actions"; // Adjust the import path if
 export function QuickActions({ guardianId }) {
   const [transferData, setTransferData] = useState({
     amount: "",
-    senderAccountId: "",
-    receiverAccountId: "",
+    senderAccountId: guardianId, // Set the guardian's ID as the default sender account
+    receiverAccountId: "", // No default receiver selected yet
   });
   const [accountCode, setAccountCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [dependents, setDependents] = useState([]);
+
+  // Fetch dependents on mount
+  useEffect(() => {
+    const fetchDependents = async () => {
+      try {
+        const dependentsData = await viewDependents(guardianId);
+        setDependents(dependentsData);
+      } catch (error) {
+        console.error("Error fetching dependents:", error);
+      }
+    };
+
+    fetchDependents();
+  }, [guardianId]);
 
   // Handle Transfer Money
   const handleTransfer = async () => {
@@ -34,8 +50,8 @@ export function QuickActions({ guardianId }) {
       setMessage("Transfer successful!");
       setTransferData({
         amount: "",
-        senderAccountId: "",
-        receiverAccountId: "",
+        senderAccountId: guardianId, // Reset to guardian as sender
+        receiverAccountId: "", // Reset receiver
       });
     } catch (error) {
       setMessage(`Transfer failed: ${error.message}`);
@@ -91,31 +107,46 @@ export function QuickActions({ guardianId }) {
               }
             />
             <Select
+              value={transferData.senderAccountId}
               onValueChange={(value) =>
                 setTransferData({ ...transferData, senderAccountId: value })
               }
             >
+              {console.log(transferData.senderAccountId)}
               <SelectTrigger className="w-[180px] bg-white">
-                <SelectValue placeholder="Select sender" />
+                <SelectValue placeholder="Select sender..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="main">Main Account</SelectItem>
-                <SelectItem value="son1">SON 1</SelectItem>
-                <SelectItem value="son2">SON 2</SelectItem>
+                <SelectItem value={guardianId}>
+                  Guardian (Main Account)
+                </SelectItem>
+                {dependents.map((dependent) => (
+                  <SelectItem key={dependent.id} value={dependent.id}>
+                    {dependent.name}
+                    {console.log(dependent.name)}
+                    {console.log(dependent.id)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select
+              value={transferData.receiverAccountId}
               onValueChange={(value) =>
                 setTransferData({ ...transferData, receiverAccountId: value })
               }
             >
               <SelectTrigger className="w-[180px] bg-white">
-                <SelectValue placeholder="Select receiver" />
+                <SelectValue placeholder="Select receiver..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="main">Main Account</SelectItem>
-                <SelectItem value="son1">SON 1</SelectItem>
-                <SelectItem value="son2">SON 2</SelectItem>
+                <SelectItem value={guardianId}>
+                  Guardian (Main Account)
+                </SelectItem>
+                {dependents.map((dependent) => (
+                  <SelectItem key={dependent.id} value={dependent.id}>
+                    {dependent.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Button
