@@ -11,8 +11,32 @@ import Image from "next/image";
 import "../globals.css";
 import routes from "../constants/routes";
 import { registerAuth } from "../api/actions/auth";
+import { useEffect, useState } from "react";
 
 export default function SignUpPage() {
+  const [isSigning, setIsSigning] = useState(false); // For button state
+  const [errorMessage, setErrorMessage] = useState(""); // For error message
+
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent default form submission
+    setIsSigning(true); // Set loading state
+    setErrorMessage(""); // Clear any previous error messages
+
+    const formData = new FormData(event.target);
+
+    // Call the LoginAuth function
+    const result = await registerAuth(formData);
+
+    if (result && result.message) {
+      setErrorMessage(result.message); // Show error message if any
+    } else {
+      // Redirect or perform other actions on success
+      console.log("Signup successful!");
+    }
+
+    setIsSigning(false); // Reset loading state
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-50 relative overflow-hidden ">
       <AnimatedBackground />
@@ -31,8 +55,7 @@ export default function SignUpPage() {
         </div>
 
         <form
-          action={registerAuth}
-          method="POST"
+          onSubmit={handleSubmit}
           className="lg:p-0 relative z-10 pt-2 pr-10 pl-10 md:pr-0 md:pl-0"
         >
           <div className="mx-auto flex w-full flex-col justify-center  sm:w-[350px]">
@@ -45,7 +68,7 @@ export default function SignUpPage() {
                 Sign up your account
               </p>
             </div>
-            <div className="grid gap-4">
+            <div className="grid gap-2">
               <div className="grid gap-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
@@ -120,7 +143,7 @@ export default function SignUpPage() {
                 <Label htmlFor="phone">phone</Label>
                 <Input
                   id="phone"
-                  name="phone"
+                  name="phoneNumber"
                   placeholder="Enter your phone number"
                   type="tel"
                   pattern="[0-9]{8}" // Optional, restricts to 10 digits
@@ -138,7 +161,15 @@ export default function SignUpPage() {
                   required
                 />
               </div>
-              <Button>Sign Up</Button>
+
+              {/* Display error message */}
+              {errorMessage && (
+                <p className="text-red-500 text-sm">{errorMessage}</p>
+              )}
+
+              <Button type="submit" disabled={isSigning} className="w-full">
+                {isSigning ? "Signing UP..." : "Sign in"}
+              </Button>
             </div>
             <div className="text-center text-sm text-muted-foreground">
               By continuing you agree to our{" "}

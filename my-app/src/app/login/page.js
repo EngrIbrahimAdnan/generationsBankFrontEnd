@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
+
 import { useFormState } from "react-dom";
 
 import { LoginAuth } from "@/app/api/actions/auth";
@@ -17,16 +20,58 @@ import routes from "../constants/routes";
 const baseUrl = "http://localhost:8080";
 
 export default function LoginPage() {
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
+
+  useEffect(() => {
+    async function generateQRCode() {
+      try {
+        const url = await QRCode.toDataURL("http://192.168.8.92:3000/login", {
+          width: 900, // Higher width for sharper QR code
+          margin: 0,
+          color: {
+            dark: "#000000", // QR code color
+            light: "#00000000", // Transparent background
+          }, // Remove extra margin for better visual quality
+        }); // Replace with your data
+        setQrCodeUrl(url);
+      } catch (error) {
+        console.error("Failed to generate QR code:", error);
+      }
+    }
+
+    generateQRCode();
+  }, []);
+
+  const [isLoading, setIsLoading] = useState(false); // For button state
+  const [errorMessage, setErrorMessage] = useState(""); // For error message
+
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent default form submission
+    setIsLoading(true); // Set loading state
+    setErrorMessage(""); // Clear any previous error messages
+
+    const formData = new FormData(event.target);
+
+    // Call the LoginAuth function
+    const result = await LoginAuth(formData);
+
+    if (result && result.message) {
+      setErrorMessage(result.message); // Show error message if any
+    } else {
+      // Redirect or perform other actions on success
+      console.log("Login successful!");
+    }
+
+    setIsLoading(false); // Reset loading state
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-50 relative overflow-hidden ">
       <AnimatedBackground />
       <div className="container relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 ">
         <div className="relative hidden h-full flex-col bg-muted  text-white dark:border-r lg:flex ">
-          <div className="relative z-20 flex items-center text-lg font-medium ">
-            <Link href="/" className="text-white absolute p-10">
-              LOGO
-            </Link>
-          </div>
+          <div className="relative z-20 flex items-center text-lg font-medium "></div>
+
           <img
             src="/Login1.png?height=500&width=400"
             alt="Placeholder illustration"
@@ -35,8 +80,7 @@ export default function LoginPage() {
         </div>
 
         <form
-          action={LoginAuth}
-          method="POST"
+          onSubmit={handleSubmit}
           className="lg:p-8 relative z-10 pt-20 pr-10 pl-10 md:pr-0 md:pl-0"
         >
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -73,7 +117,14 @@ export default function LoginPage() {
                 />
               </div>
 
-              <Button>Login</Button>
+              {/* Display error message */}
+              {errorMessage && (
+                <p className="text-red-500 text-sm">{errorMessage}</p>
+              )}
+
+              <Button type="submit" disabled={isLoading} className="w-full">
+                {isLoading ? "Logging in..." : "Login"}
+              </Button>
             </div>
             <div className="text-center text-sm text-muted-foreground">
               Review our{" "}
@@ -100,6 +151,22 @@ export default function LoginPage() {
               >
                 Sign up
               </Link>
+            </div>
+
+            <h2 className="text-lg font-medium mb-4 items-center justify-center flex">
+              Or scan QR code
+            </h2>
+
+            <div className=" inset-0 flex items-center justify-center">
+              {qrCodeUrl ? (
+                <img
+                  src={qrCodeUrl}
+                  alt="Generated QR Code"
+                  className="w-52 object-contain"
+                />
+              ) : (
+                <p>Loading QR Code...</p>
+              )}
             </div>
           </div>
         </form>
