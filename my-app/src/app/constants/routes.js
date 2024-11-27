@@ -4,6 +4,7 @@ const routes = {
   register: "/register",
   about: "/about",
   dashboard: "/auth/dashboard",
+  // Feature: "/feature",
 
   // Use for later for specific pages for users
   // userProfile: (id) => `/user/${id}`, // Dynamic route example
