@@ -4,13 +4,6 @@ const baseUrl = "http://localhost:8080/api/guardian";
 const headers = new Headers();
 headers.append("Content-Type", "application/json");
 
-// Bearer token
-const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInN1YiI6IlJhbWVucyIsImlhdCI6MTczMjY4MzM3NSwiZXhwIjoxNzMyNjg2OTc1fQ.J_SpYnSzVCecApIwDi0UYCTLFfrPr5KO1aKXP9d_FmU";
-
-// Append Authorization header
-headers.append("Authorization", `Bearer ${token}`);
-
 /**
  * Transfer funds between accounts.
  * @param {Object} data - { senderAccountId, receiverAccountId, amount }
