@@ -10,13 +10,20 @@ import { motion } from "framer-motion";
 import NavBar from "../components/NavBar/NavBar";
 import { Landmark, Bell, Wallet, NotebookPen, LineChart } from "lucide-react";
 
+import monitor from "../../../public/stock.png";
+import child from "../../../public/stock2.jpg";
+import people from "../../../public/stock1.jpg";
+import writing from "../../../public/stockImage1.jpg";
+
+import phone from "../../../public/stock3.png";
+
 export default function FeaturePageComponents() {
   const features = [
     {
       title: "Smart Financial Oversight",
       description:
         "Monitor real-time spending habits, receive personalized insights, and make smarter financial decisions with our advanced tracking capabilities.",
-      image: "/placeholder.svg?height=200&width=300",
+      image: monitor,
       icon: LineChart,
       iconAnimation: {
         initial: { pathLength: 0, opacity: 0 },
@@ -33,7 +40,7 @@ export default function FeaturePageComponents() {
       title: "Kid-Friendly Savings Tools",
       description:
         "Kids can set savings goals, track their progress, and learn the value of money through interactive and engaging features designed specifically for them.",
-      image: "/placeholder.svg?height=200&width=300",
+      image: child,
       icon: Landmark,
       iconAnimation: {
         initial: { scale: 1 },
@@ -45,7 +52,7 @@ export default function FeaturePageComponents() {
       title: "Real-Time Notifications",
       description:
         "Receive real-time balance updates for every transaction, ensuring you're always informed about your account activity.",
-      image: "/placeholder.svg?height=200&width=300",
+      image: people,
       icon: Bell,
       iconAnimation: {
         initial: { rotate: 0 },
@@ -57,7 +64,7 @@ export default function FeaturePageComponents() {
       title: "Customizable Spending Categories",
       description:
         "Create and manage personalized spending categories, set budgets, and track your expenses with ease.",
-      image: "/placeholder.svg?height=200&width=300",
+      image: writing,
       icon: Wallet,
       iconAnimation: {
         initial: { y: 0 },
@@ -69,7 +76,7 @@ export default function FeaturePageComponents() {
       title: "Financial Education Hub",
       description:
         "Age-appropriate lessons and interactive content teach kids about saving, investing, budgeting, and the basics of money management in a fun and accessible way.",
-      image: "/placeholder.svg?height=300&width=600",
+      image: phone,
       icon: NotebookPen,
       iconAnimation: {
         initial: { rotateY: 0 },

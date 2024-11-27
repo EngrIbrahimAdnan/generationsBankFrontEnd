@@ -5,9 +5,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import routes from "@/app/constants/routes";
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   // Generate random positions for floating coins only once
   const floatingCoins = useMemo(() => {
@@ -22,6 +25,11 @@ export default function HomePage() {
   }, []);
 
   if (!mounted) return null;
+
+  const handleNavigation = () => {
+    // router(routes.login); // Replace '/destination' with your route
+    router.push(routes.login); // Replace '/destination' with your route
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fcfd] overflow-hidden relative">
@@ -112,6 +120,7 @@ export default function HomePage() {
                 size="lg"
                 className="bg-gradient-to-r from-[#4B89BF] to-[#35579b] hover:opacity-90 transition-opacity"
                 aria-label="Explore Guardian App"
+                onClick={handleNavigation}
               >
                 Explore
               </Button>
