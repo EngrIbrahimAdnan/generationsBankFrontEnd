@@ -15,15 +15,17 @@ const headers = new Headers();
 headers.append("Content-Type", "application/json");
 
 export async function LoginAuth(formData) {
-  const username = formData.get("username");
-  const password = formData.get("password");
+  const formObject = {};
+  formData.forEach((value, key) => {
+    formObject[key] = value;
+  });
 
   try {
     //fetch response from backend via api endpoint "/api/auth/login"
     const response = await fetch(`${baseUrl}/api/auth/login`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify(formObject),
     });
 
     if (!response.ok) {
@@ -41,8 +43,7 @@ export async function LoginAuth(formData) {
 
     // returns to same page if something is wrong
     return {
-      message:
-        error.message || "An unexpected error occurred. Please try again.",
+      message: "Incorrect Credentials. Please try again.",
     };
   }
 
@@ -51,14 +52,13 @@ export async function LoginAuth(formData) {
 }
 
 export async function registerAuth(formData) {
-  const username = formData.get("username"); // Retrieve using ID
-  const email = formData.get("email"); // Retrieve using ID
+  const formObject = {};
+  formData.forEach((value, key) => {
+    formObject[key] = value;
+  });
+
   const password = formData.get("password");
   const confirm_password = formData.get("confirm-password");
-  const age = formData.get("age");
-  const address = formData.get("address");
-  const phoneNumber = formData.get("phone");
-  const role = formData.get("role");
 
   // if password doesnt match confirm password
   if (password !== confirm_password) {
@@ -70,15 +70,7 @@ export async function registerAuth(formData) {
     const response = await fetch(`${baseUrl}/api/auth/createUser`, {
       method: "POST",
       headers,
-      body: JSON.stringify({
-        username,
-        email,
-        password,
-        age,
-        address,
-        phoneNumber,
-        role,
-      }),
+      body: JSON.stringify(formObject),
     });
 
     if (!response.ok) {
@@ -93,8 +85,7 @@ export async function registerAuth(formData) {
     // if registeration fails return to form without routing
     console.error("registration error");
     return {
-      message:
-        error.message || "An unexpected error occurred. Please try again.",
+      message: "Either username or email is already registered with.",
     };
   }
 
