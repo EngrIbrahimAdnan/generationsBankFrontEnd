@@ -48,7 +48,7 @@ export async function LoginAuth(formData) {
   }
 
   // routes to about page if login is successful for time being
-  redirect(routes.about);
+  redirect(routes.dashboard);
 }
 
 export async function registerAuth(formData) {
