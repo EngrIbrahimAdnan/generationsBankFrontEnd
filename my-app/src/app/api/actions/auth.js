@@ -92,5 +92,5 @@ export async function registerAuth(formData) {
   }
 
   // if registeration is successful, routes to about page for time being
-  redirect(routes.about);
+  redirect(routes.login);
 }

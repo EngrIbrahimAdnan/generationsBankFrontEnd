@@ -12,10 +12,18 @@ import "../globals.css";
 import routes from "../constants/routes";
 import { registerAuth } from "../api/actions/auth";
 import { useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SignUpPage() {
   const [isSigning, setIsSigning] = useState(false); // For button state
   const [errorMessage, setErrorMessage] = useState(""); // For error message
+  const [role, setRole] = useState(""); // State to manage selected role
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
@@ -147,15 +155,25 @@ export default function SignUpPage() {
                   required
                 />
               </div>
+
               <div className="grid gap-2">
-                <Label htmlFor="role">role</Label>
-                <Input
-                  id="role"
-                  name="role"
-                  placeholder="Enter your role"
-                  type="name"
-                  required
-                />
+                <Label htmlFor="role">Role</Label>
+
+                <Select
+                  value={role}
+                  onValueChange={(value) => setRole(value)} // Update state on selection
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Select role..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="GUARDIAN">Guardian</SelectItem>
+                    <SelectItem value="DEPENDENT">Dependent</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Hidden input to include the role in the form submission */}
+                <input type="hidden" name="role" value={role} />
               </div>
 
               {/* Display error message */}
@@ -164,20 +182,20 @@ export default function SignUpPage() {
               )}
 
               <Button type="submit" disabled={isSigning} className="w-full">
-                {isSigning ? "Signing UP..." : "Sign in"}
+                {isSigning ? "Signing UP..." : "Sign Up"}
               </Button>
             </div>
             <div className="text-center text-sm text-muted-foreground">
               By continuing you agree to our{" "}
               <Link
-                href="/terms"
+                href={routes.terms}
                 className="underline underline-offset-4 hover:text-primary"
               >
                 Terms & Conditions
               </Link>{" "}
               and{" "}
               <Link
-                href="/privacy"
+                href={routes.privacy}
                 className="underline underline-offset-4 hover:text-primary"
               >
                 Privacy Policy
